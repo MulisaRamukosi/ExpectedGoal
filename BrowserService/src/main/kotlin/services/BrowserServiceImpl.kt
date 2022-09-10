@@ -11,7 +11,7 @@ import org.openqa.selenium.firefox.FirefoxOptions
 
 class BrowserServiceImpl(private val browser: Browser) : BrowserService {
 
-    private val driver = when(browser.browserType) {
+    val driver = when(browser.browserType) {
         BrowserType.CHROME -> setUpChromeDriver()
         BrowserType.FIREFOX -> setUpFireFoxDriver()
     }
@@ -39,6 +39,6 @@ class BrowserServiceImpl(private val browser: Browser) : BrowserService {
     }
 
     override suspend fun closeBrowser() {
-        driver.close()
+        driver.quit()
     }
 }
