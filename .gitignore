@@ -1,0 +1,7 @@
+# Project exclude paths
+/.gradle/
+/app/build/
+/BrowserService/build/
+/build/
+/domain/build/
+/SuperSport/build/
