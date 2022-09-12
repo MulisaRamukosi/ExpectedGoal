@@ -1,7 +1,7 @@
+import applicationDI.ApplicationModule
 import constants.BrowserType
 import constants.Month
 import constants.Site
-import applicationDI.ApplicationModule
 import browserServiceDI.BrowserServiceModule
 import superSportDI.SuperSportModule
 import models.Browser
@@ -11,7 +11,6 @@ import uy.kohesive.injekt.InjektMain
 import uy.kohesive.injekt.api.InjektRegistrar
 import uy.kohesive.injekt.api.addSingleton
 import uy.kohesive.injekt.injectLazy
-
 
 suspend fun main() {
 
@@ -26,7 +25,8 @@ class SetUpDependencyInjection : InjektMain(){
 
         val browserSpec = Browser(
             browserType = BrowserType.CHROME,
-            openInMaximizeView = true
+            openInMaximizeView = true,
+            waitDurationInSeconds = 30
         )
         val collectionDescription = CollectionDescription(
             startDate = TargetDate(day = 1, month = Month.JANUARY, year = 2022),
