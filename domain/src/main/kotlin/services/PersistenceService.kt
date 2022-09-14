@@ -5,6 +5,6 @@ import models.Response
 
 interface PersistenceService {
 
-    suspend fun save(cleanSiteScrap: CleanSiteScrap): Response<Boolean>
+    suspend fun save(cleanSiteScrap: CleanSiteScrap)
 
 }

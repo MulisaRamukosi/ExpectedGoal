@@ -1,5 +1,6 @@
 package models
 
 data class NavigationState (
-    val dummy: String
+    val collectionDescription: CollectionDescription,
+    val url: String?
 )

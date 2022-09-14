@@ -5,5 +5,5 @@ import models.Response
 import models.SiteScrap
 
 interface CleanerService {
-    fun cleanSiteScrap(siteScrap: SiteScrap) : Response<CleanSiteScrap>
+    fun cleanSiteScrap(siteScrap: SiteScrap) : CleanSiteScrap
 }
