@@ -7,8 +7,8 @@ class SuperSportResultScrapper (private val browserService: BrowserService) : We
 
     private val navigationService : BrowserNavigationService = BrowserNavigationServiceImpl(browserService = browserService)
     private val scrapperService: ScrapperService = ScrapperServiceImpl(browserService = browserService)
-    private val cleanerService: CleanerService = CleanerServiceImpl(browserService = browserService)
-    private val persistenceService: PersistenceService = PersistenceServiceImpl(browserService = browserService)
+    private val cleanerService: CleanerService = CleanerServiceImpl()
+    private val persistenceService: PersistenceService = PersistenceServiceImpl()
 
     override suspend fun scrap(collectionDescription: CollectionDescription) {
         try {
