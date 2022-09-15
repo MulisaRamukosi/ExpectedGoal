@@ -8,7 +8,7 @@ import uy.kohesive.injekt.api.InjektRegistrar
 import uy.kohesive.injekt.api.addSingletonFactory
 import uy.kohesive.injekt.api.get
 
-object ApplicationModule : InjektModule {
+object AppModule : InjektModule {
     override fun InjektRegistrar.registerInjectables() {
         addSingletonFactory <Application> {
             ApplicationImpl(

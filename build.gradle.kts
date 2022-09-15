@@ -13,10 +13,11 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":app"))
+
     implementation(project(":BrowserService"))
     implementation(project(":SuperSport"))
     implementation(project(":domain"))
+    implementation(project(":app"))
 
     testImplementation(kotlin("test"))
 

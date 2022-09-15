@@ -1,4 +1,4 @@
-import applicationDI.ApplicationModule
+import applicationDI.AppModule
 import constants.BrowserType
 import constants.Month
 import constants.Site
@@ -42,7 +42,7 @@ class SetUpDependencyInjection : InjektMain(){
         }
 
         importModule(BrowserServiceModule)
-        importModule(ApplicationModule)
+        importModule(AppModule)
 
     }
 
