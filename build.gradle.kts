@@ -13,12 +13,13 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":app"))
+
     implementation(project(":BrowserService"))
     implementation(project(":SuperSport"))
     implementation(project(":domain"))
+    implementation(project(":app"))
     implementation(project(":Persistence"))
-
+    
     testImplementation(kotlin("test"))
 
     implementation("uy.kohesive.injekt:injekt-core:1.16.1")
