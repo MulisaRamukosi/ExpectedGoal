@@ -20,7 +20,7 @@ class BrowserServiceImpl(private val browser: Browser) : BrowserService {
     private var webElement: WebElement? = null
     private var webElements: MutableList<WebElement>? = null
 
-    private var driver: WebDriver
+    var driver: WebDriver
 
     init {
         driver = when (browser.browserType) {
