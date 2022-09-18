@@ -5,5 +5,6 @@ import constants.BrowserType
 data class Browser (
     val browserType: BrowserType,
     val openInMaximizeView: Boolean,
-    val waitDurationInSeconds: Long
+    val waitDurationInSeconds: Long,
+    val browserSize: BrowserSize? = null
 )

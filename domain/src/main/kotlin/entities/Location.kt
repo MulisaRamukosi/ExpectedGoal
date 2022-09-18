@@ -1,6 +1,6 @@
 package entities
 
-data class Player (
+data class Location(
     val id: String,
     val name: String
 )

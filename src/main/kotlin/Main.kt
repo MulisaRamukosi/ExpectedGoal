@@ -3,8 +3,10 @@ import constants.BrowserType
 import constants.Month
 import constants.Site
 import browserServiceDI.BrowserServiceModule
+import dependencyInjection.PersistenceModule
 import superSportDI.SuperSportModule
 import models.Browser
+import models.BrowserSize
 import models.CollectionDescription
 import models.TargetDate
 import uy.kohesive.injekt.InjektMain
@@ -26,7 +28,11 @@ class SetUpDependencyInjection : InjektMain(){
         val browserSpec = Browser(
             browserType = BrowserType.CHROME,
             openInMaximizeView = true,
-            waitDurationInSeconds = 30
+            waitDurationInSeconds = 30,
+            browserSize = BrowserSize(
+                width = 800,
+                height = 800
+            )
         )
         val collectionDescription = CollectionDescription(
             startDate = TargetDate(day = 1, month = Month.JANUARY, year = 2022),
@@ -42,7 +48,8 @@ class SetUpDependencyInjection : InjektMain(){
         }
 
         importModule(BrowserServiceModule)
-        importModule(AppModule)
+        importModule(ApplicationModule)
+        importModule(PersistenceModule)
 
     }
 

@@ -1,11 +1,10 @@
 package models
 
 data class SiteScrap(
-    val matchId: String,
+    val matchDetails: String,
+    val events: String,
+    val stats: String,
     val homeLineUp: String,
     val awayLineUp: String,
-    val result: String,
-    val commentary: String,
-    val matchStats: String,
-    val matchEvents: String
+    val commentary: String
 )

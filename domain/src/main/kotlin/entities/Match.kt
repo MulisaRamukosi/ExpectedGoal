@@ -1,10 +1,11 @@
 package entities
 
+import java.util.Date
+
 data class Match (
     val id: String,
-    val date: String,
-    val location: String,
-    val homeTeamId: String,
-    val awayTeamId: String
-
+    val locationId: String,
+    val homeScore: Int,
+    val awayScore: Int,
+    val date: Date,
 )

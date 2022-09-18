@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/BrowserService" />
+            <option value="$PROJECT_DIR$/Persistence" />
             <option value="$PROJECT_DIR$/SuperSport" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/domain" />
