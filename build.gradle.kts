@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":BrowserService"))
     implementation(project(":SuperSport"))
     implementation(project(":domain"))
+    implementation(project(":Persistence"))
 
     testImplementation(kotlin("test"))
 
