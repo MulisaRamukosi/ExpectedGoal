@@ -1,20 +1,19 @@
 package services
 
-import dao.*
 import models.CleanSiteScrap
-import models.Response
+import repositories.*
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 class PersistenceServiceImpl(
-    private val commentaryDao: CommentaryDao = Injekt.get(),
-    private val eventDao: EventDao = Injekt.get(),
-    private val lineUpDao: LineUpDao = Injekt.get(),
-    private val locationDao: LocationDao = Injekt.get(),
-    private val matchDao: MatchDao = Injekt.get(),
-    private val playerDao: PlayerDao = Injekt.get(),
-    private val statDao: StatDao = Injekt.get(),
-    private val teamDao: TeamDao = Injekt.get()
+    private val commentaryRepo: CommentaryRepo = Injekt.get(),
+    private val eventRepo: EventRepo = Injekt.get(),
+    private val lineUpRepo: LineUpRepo = Injekt.get(),
+    private val locationRepo: LocationRepo = Injekt.get(),
+    private val matchRepo: MatchRepo = Injekt.get(),
+    private val playerRepo: PlayerRepo = Injekt.get(),
+    private val statRepo: StatRepo = Injekt.get(),
+    private val teamRepo: TeamRepo = Injekt.get()
 ) : PersistenceService {
 
     override suspend fun save(cleanSiteScrap: CleanSiteScrap) {
