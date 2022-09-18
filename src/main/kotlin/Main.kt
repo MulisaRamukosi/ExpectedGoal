@@ -48,7 +48,7 @@ class SetUpDependencyInjection : InjektMain(){
         }
 
         importModule(BrowserServiceModule)
-        importModule(ApplicationModule)
+        importModule(AppModule)
         importModule(PersistenceModule)
 
     }
