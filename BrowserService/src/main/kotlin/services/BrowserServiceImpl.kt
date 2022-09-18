@@ -4,6 +4,7 @@ import constants.BrowserType
 import io.github.bonigarcia.wdm.WebDriverManager
 import models.Browser
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
@@ -19,9 +20,17 @@ class BrowserServiceImpl(private val browser: Browser) : BrowserService {
     private var webElement: WebElement? = null
     private var webElements: MutableList<WebElement>? = null
 
-    val driver = when (browser.browserType) {
-        BrowserType.CHROME -> setUpChromeDriver()
-        BrowserType.FIREFOX -> setUpFireFoxDriver()
+    var driver: WebDriver
+
+    init {
+        driver = when (browser.browserType) {
+            BrowserType.CHROME -> setUpChromeDriver()
+            BrowserType.FIREFOX -> setUpFireFoxDriver()
+        }
+
+        browser.browserSize?.let {
+            driver.manage().window().size = Dimension(it.width, it.height)
+        }
     }
 
     private fun setUpChromeDriver(): WebDriver = run {
