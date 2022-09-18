@@ -1,5 +1,8 @@
 package models
 
+import dto.MatchDto
+import entities.*
+
 data class CleanSiteScrap (
-    val dummy: String
+    val match: MatchDto
 )
