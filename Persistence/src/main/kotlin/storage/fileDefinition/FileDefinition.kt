@@ -8,6 +8,7 @@ class FileDefinition {
         setupTeamCsvFile()
         setupLocationCsvFile()
     }
+
     private fun setupTeamCsvFile(){
         generateCsvFile(fileName = CsvFileNames.TEAM, columns = "id,name\n")
     }
