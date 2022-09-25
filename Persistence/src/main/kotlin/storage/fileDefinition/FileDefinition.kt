@@ -6,12 +6,21 @@ import java.io.File
 class FileDefinition {
     fun setupCsvFiles(){
         setupTeamCsvFile()
+        setupLocationCsvFile()
     }
 
     private fun setupTeamCsvFile(){
-        val file = File(CsvFileNames.TEAM)
-        if(file.exists().not() && file.createNewFile()){
-            file.writeText(text = "id,name\n")
+        generateCsvFile(fileName = CsvFileNames.TEAM, columns = "id,name\n")
+    }
+
+    private fun setupLocationCsvFile(){
+        generateCsvFile(fileName = CsvFileNames.LOCATION, columns = "id,name\n")
+    }
+
+    private fun generateCsvFile(fileName: String, columns String){
+        val file = File(filename)
+        if (file.exists().not() && file.createNewFile()){
+            file.WriteText(text = columns)
         }
     }
 }
