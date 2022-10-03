@@ -1,12 +1,11 @@
 package services
 
+import constants.Constants
 import constants.Month
 import models.CollectionDescription
 import models.NavigationState
 import models.TargetDate
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import java.util.*
 import kotlin.collections.ArrayList
@@ -19,6 +18,7 @@ class BrowserNavigationServiceImpl(private val browserService: BrowserService) :
     private var indexTracker: Int = 0
 
     override suspend fun navigateToState(navigationState: NavigationState) {
+        browserService.openUrl(Constants.superSportUrl)
         browserService.maximizeBrowser()
         this.navigationState = navigationState
         resetValues()
@@ -86,12 +86,13 @@ class BrowserNavigationServiceImpl(private val browserService: BrowserService) :
     override suspend fun loadNextState(): NavigationState? {
         if (indexTracker < matchUrls.size) {
             loadStateForCurrentIndex()
+
             return NavigationState(
                 collectionDescription = CollectionDescription(
-                    startDate = extractDate(matchUrl = matchUrls[indexTracker]),
+                    startDate = extractDate(),
                     endDate = navigationState.collectionDescription.endDate
                 ),
-                url = matchUrls[indexTracker]
+                url = browserService.getCurrentUrl()
             )
         }
 
@@ -101,7 +102,7 @@ class BrowserNavigationServiceImpl(private val browserService: BrowserService) :
     private fun loadNextNavigationState(): NavigationState? {
         val startDate = navigationState.collectionDescription.startDate
         val endDate = navigationState.collectionDescription.endDate
-        val newDate = getNextDayAfterDate(date = startDate)
+        val newDate = getNextMonthDate(date = startDate)
 
         if (endDate != null
             && ((newDate.month > endDate.month)
@@ -119,13 +120,13 @@ class BrowserNavigationServiceImpl(private val browserService: BrowserService) :
         )
     }
 
-    private fun getNextDayAfterDate(date: TargetDate): TargetDate {
+    private fun getNextMonthDate(date: TargetDate): TargetDate {
         val calendar: Calendar = Calendar.getInstance()
 
-        calendar.set(Calendar.DAY_OF_MONTH, date.day)
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
         calendar.set(Calendar.MONTH, date.month.ordinal)
         calendar.set(Calendar.YEAR, date.year)
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
+        calendar.add(Calendar.MONTH, 1)
 
         return TargetDate(
             day = calendar.get(Calendar.DAY_OF_MONTH),
@@ -134,14 +135,12 @@ class BrowserNavigationServiceImpl(private val browserService: BrowserService) :
         )
     }
 
-    private fun extractDate(matchUrl: String): TargetDate {
-        val doc: Document = Jsoup.connect(matchUrl).get()
-        val dateElement: Element = doc.getElementsByClass("has-text-centered match-timestamp").first()
-            ?: throw Exception("date element was not found")
-        val dateText: String = dateElement.text().replace("'", "") // "19 October 2021 | 17:30"
+    private suspend fun extractDate(): TargetDate {
+        val dateElement = browserService.findElementByClass(className = "match-timestamp").extractInnerText(i = 0)
+        val dateText: String = dateElement.replace("'", "") // "19 October 2021 | 17:30"
         val datePieces: List<String> = dateText.split(" ")
         val day: Int = datePieces[0].toInt()
-        val month: Month = Month.valueOf(value = datePieces[1].trim())
+        val month: Month = Month.valueOf(value = datePieces[1].trim().uppercase())
         val year: Int = datePieces[2].toInt()
 
         return TargetDate(day = day, month = month, year = year)

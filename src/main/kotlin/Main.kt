@@ -35,7 +35,7 @@ class SetUpDependencyInjection : InjektMain(){
             )
         )
         val collectionDescription = CollectionDescription(
-            startDate = TargetDate(day = 25, month = Month.FEBRUARY, year = 2022),
+            startDate = TargetDate(day = 27, month = Month.FEBRUARY, year = 2022),
             endDate = TargetDate(day = 2, month = Month.SEPTEMBER, year = 2022)
         )
         val targetSite: Site = Site.SUPER_SPORT
