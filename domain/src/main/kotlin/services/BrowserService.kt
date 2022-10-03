@@ -1,11 +1,8 @@
 package services
 
-import models.Browser
-import models.NavigationState
-import models.Response
-
 interface BrowserService {
     suspend fun openUrl(url: String)
+    suspend fun maximizeBrowser()
     suspend fun closeBrowser()
     suspend fun findElementById(id: String): BrowserService
     suspend fun findElementByClass(className: String): BrowserService
@@ -16,4 +13,6 @@ interface BrowserService {
     suspend fun extractInnerText(i: Int? = null): String
     suspend fun extractInnerHtml(i: Int? = null): String
     suspend fun getCurrentUrl(): String
+    suspend fun navigateBack()
+    suspend fun copy(): BrowserService
 }

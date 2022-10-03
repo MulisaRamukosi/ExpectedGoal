@@ -12,10 +12,11 @@ class SuperSportResultScrapper (private val browserService: BrowserService) : We
 
     override suspend fun scrap(collectionDescription: CollectionDescription) {
         try {
-            var navigationState: NavigationState? = NavigationState(collectionDescription = collectionDescription, url = "")
+            val currentNavigationState = NavigationState(collectionDescription = collectionDescription, url = "")
+            var navigationState: NavigationState?
 
             browserService.openUrl(Constants.superSportUrl)
-            navigationService.navigateToState(navigationState)
+            navigationService.navigateToState(currentNavigationState)
 
             do{
                 val siteScrap = scrapperService.scrapPage()
