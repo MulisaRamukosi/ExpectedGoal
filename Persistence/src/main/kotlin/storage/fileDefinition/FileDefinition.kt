@@ -12,6 +12,7 @@ class FileDefinition {
         setupLineupCsvFile()
         setupEventCsvFile()
         setupStatCsvFile()
+
         setupPlayerCsvFile()
 
     }
