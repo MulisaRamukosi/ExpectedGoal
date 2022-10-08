@@ -12,9 +12,7 @@ class FileDefinition {
         setupLineupCsvFile()
         setupEventCsvFile()
         setupStatCsvFile()
-
         setupPlayerCsvFile()
-
     }
     private fun setupTeamCsvFile(){
         generateCsvFile(fileName = CsvFileNames.TEAM, columns = "id,name\n")
@@ -33,15 +31,15 @@ class FileDefinition {
     }
 
     private fun setupLineupCsvFile(){
-        generateCsvFile(fileName = CsvFileNames.LINEUP, columns = "id,matchId,teamId,playerID,type,position,positionNumber\n")
+        generateCsvFile(fileName = CsvFileNames.LINEUP, columns = "id,matchId,teamId,playerId,type,position,positionNumber\n")
     }
 
     private fun setupEventCsvFile(){
-        generateCsvFile(fileName = CsvFileNames.EVENT, columns = "id,matchId,teamId,playerID,minute,type\n")
+        generateCsvFile(fileName = CsvFileNames.EVENT, columns = "id,matchId,teamId,playerId,minute,type\n")
     }
 
     private fun setupStatCsvFile(){
-        generateCsvFile(fileName = CsvFileNames.STAT, columns = "id,matchid,home,away,type\n")
+        generateCsvFile(fileName = CsvFileNames.STAT, columns = "id,matchId,home,away,type\n")
     }
 
     private fun setupPlayerCsvFile(){
