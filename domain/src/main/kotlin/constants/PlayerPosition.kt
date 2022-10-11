@@ -4,5 +4,6 @@ enum class PlayerPosition {
     GOALKEEPER,
     DEFENDER,
     MIDFIELDER,
-    STRIKER
+    STRIKER,
+    SUBSTITUTION
 }
