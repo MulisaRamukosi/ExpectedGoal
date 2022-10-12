@@ -8,16 +8,16 @@ internal class CommentaryMapper : BaseMapper<CommentaryDto, Commentary> {
 
     override fun toDto(entity: Commentary): CommentaryDto {
         return CommentaryDto(
-            comment = entity.comment
+            comment = entity.comment,
             minute = entity.minute
-        )bn
+        )
     }
 
     override fun toEntity(dto: CommentaryDto): Commentary {
         return Commentary(
             id = UUID.randomUUID().toString(),
             matchId = UUID.randomUUID().toString(),
-            comment = dto.comment
+            comment = dto.comment,
             minute = dto.minute
         )
     }
