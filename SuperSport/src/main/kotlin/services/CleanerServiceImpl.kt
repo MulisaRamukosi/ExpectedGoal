@@ -1,134 +1,202 @@
 package services
 
-import constants.LineUpType
-import constants.PlayerPosition
-import constants.StatType
+import constants.*
 import dto.*
+import ext.extractAlphabets
+import ext.extractAlphabetsWithoutQuotations
+import ext.extractNumbersToInt
 import models.CleanSiteScrap
 import models.SiteScrap
+import org.jsoup.Jsoup
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class CleanerServiceImpl : CleanerService {
 
     override fun cleanSiteScrap(siteScrap: SiteScrap): CleanSiteScrap {
-        val matchDetails= siteScrap.matchDetails.split("\n")
+        val matchDetails = siteScrap.matchDetails.split("\n")
+        val events = extractEvents(eventsHtml = siteScrap.events)
 
-        TODO("not yet implemented")
+        return CleanSiteScrap(
+            match = MatchDto(
+                date = extractDate(matchDetails = matchDetails),
+                location = extractLocation(matchDetails = matchDetails),
+                homeTeam = extractHomeTeam(matchDetails = matchDetails),
+                awayTeam = extractAwayTeam(matchDetails = matchDetails),
+                homeScore = extractHomeScore(matchDetails = matchDetails),
+                awayScore = extractAwayScore(matchDetails = matchDetails),
+                stats = extractStats(matchStats = siteScrap.stats),
+                commentary = extractCommentary(matchCommentary = siteScrap.commentary),
+                homeLineUp = extractLineUp(matchLineUp = siteScrap.homeLineUp),
+                awayLineUp = extractLineUp(matchLineUp = siteScrap.awayLineUp),
+                homeEvents = events.first,
+                awayEvents = events.second
+            )
+        )
     }
 
-    fun extractTeam(team:String): TeamDto {
-        return TeamDto(name = team)
-    }
-    fun extractScore(score: Int): Int {
-        return score
-    }
-    fun extractVenue(venue: String): LocationDto{
-        return LocationDto(name=venue)
+    private fun extractDate(matchDetails: List<String>): Date {
+        val date = matchDetails[6]
+        val smdf = SimpleDateFormat(Constants.DATE_FORMAT)
+        return smdf.parse(date)
     }
 
-    fun extractCommentary(siteScrap: SiteScrap): List<CommentaryDto>{
-        val commentary=siteScrap.commentary.split("\n")
+    private fun extractHomeTeam(matchDetails: List<String>): TeamDto {
+        return TeamDto(name = matchDetails[1])
+    }
 
-        var commentaryList= arrayListOf<CommentaryDto>()
+    private fun extractAwayTeam(matchDetails: List<String>): TeamDto {
+        return TeamDto(name = matchDetails[5])
+    }
 
-        for (i in commentary.indices-1){
-            commentaryList.add(CommentaryDto(commentary[i+1],commentary[i].filter { it.isDigit() }.toInt()))
+    private fun extractHomeScore(matchDetails: List<String>): Int {
+        return matchDetails[2].toInt()
+    }
+
+    private fun extractAwayScore(matchDetails: List<String>): Int {
+        return matchDetails[4].toInt()
+    }
+
+    private fun extractLocation(matchDetails: List<String>): LocationDto {
+        return LocationDto(name = matchDetails[7].extractAlphabetsWithoutQuotations())
+    }
+
+    private fun extractCommentary(matchCommentary: String): List<CommentaryDto> {
+        val commentaries = matchCommentary.split("\n")
+        val commentaryList = arrayListOf<CommentaryDto>()
+
+        for (i in 0..commentaries.size - 2 step 2) {
+            val commentary = CommentaryDto(
+                comment = commentaries[i + 1].extractAlphabetsWithoutQuotations(),
+                minute = commentaries[i].extractNumbersToInt()
+            )
+            commentaryList.add(commentary)
         }
 
-        return commentaryList.toList()
+        return commentaryList
     }
 
+    private fun extractLineUp(matchLineUp: String): List<LineUpDto> {
+        val lineUps = matchLineUp.split("\n")
+        val playersLineUp = arrayListOf<LineUpDto>()
 
+        var i = 0
 
-    fun extractHomeLineUp(siteScrap: SiteScrap): List<LineUpDto>{
+        while (i <= lineUps.size - 3) {
 
-        val lineUp=siteScrap.homeLineUp.split("\n")
-        var  lineUpList= arrayListOf<LineUpDto>()
+            if (lineUps[i].lowercase() == "substitutes") i++
 
-        //Starting lineUp has 11 players
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[1]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[2].uppercase()),lineUp[0].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[4]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[5].uppercase()),lineUp[3].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[7]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[8].uppercase()),lineUp[6].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[10]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[11].uppercase()),lineUp[9].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[13]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[14].uppercase()),lineUp[12].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[16]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[17].uppercase()),lineUp[15].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[19]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[20].uppercase()),lineUp[18].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[22]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[23].uppercase()),lineUp[21].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[25]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[26].uppercase()),lineUp[24].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[28]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[29].uppercase()),lineUp[27].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[31]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[32].uppercase()),lineUp[30].filter{ it.isDigit()}.toInt()))
+            val positionNumber = lineUps[i].extractNumbersToInt()
+            val player = PlayerDto(name = lineUps[i + 1])
+            val playerPosition = lineUps[i + 2].extractAlphabets()
+            val position = PlayerPosition.valueOf(playerPosition.uppercase())
+            val lineUpType = if (position == PlayerPosition.SUBSTITUTE) LineUpType.SUBSTITUTE else LineUpType.MAIN
 
-        //Number of Subs vary, May need to change this code in future
+            playersLineUp.add(
+                LineUpDto(
+                    player = player,
+                    type = lineUpType,
+                    position = position,
+                    positionNumber = positionNumber
+                )
+            )
 
-        /*for(i in 34 until lineUp.size-4){
-            lineUpList.add(LineUpDto(PlayerDto(lineUp[i+1]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[i].filter{ it.isDigit()}.toInt()))
-        }*/
-
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[35]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[34].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[38]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[37].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[41]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[40].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[44]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[43].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[47]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[46].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[50]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[49].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[53]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[52].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[56]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[55].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[59]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[58].filter{ it.isDigit()}.toInt()))
-
-
-        return  lineUpList.toList()
-    }
-
-    fun extractAwayLineUp(siteScrap: SiteScrap): List<LineUpDto>{
-
-        val lineUp=siteScrap.awayLineUp.split("\n")
-        var  lineUpList= arrayListOf<LineUpDto>()
-
-        //Starting lineUp has 11 players
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[1]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[2].uppercase()),lineUp[0].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[4]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[5].uppercase()),lineUp[3].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[7]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[8].uppercase()),lineUp[6].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[10]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[11].uppercase()),lineUp[9].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[13]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[14].uppercase()),lineUp[12].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[16]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[17].uppercase()),lineUp[15].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[19]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[20].uppercase()),lineUp[18].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[22]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[23].uppercase()),lineUp[21].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[25]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[26].uppercase()),lineUp[24].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[28]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[29].uppercase()),lineUp[27].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[31]),LineUpType.MAIN,PlayerPosition.valueOf(lineUp[32].uppercase()),lineUp[30].filter{ it.isDigit()}.toInt()))
-
-
-        //Number of Subs vary, May need to change this code in future
-
-        /*for(i in 34 until lineUp.size){
-            lineUpList.add(LineUpDto(PlayerDto(lineUp[i+1]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[i].filter{ it.isDigit()}.toInt()))
+            i += 3
         }
-        */
 
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[35]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[34].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[38]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[37].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[41]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[40].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[44]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[43].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[47]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[46].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[50]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[49].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[53]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[52].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[56]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[55].filter{ it.isDigit()}.toInt()))
-        lineUpList.add(LineUpDto(PlayerDto(lineUp[59]),LineUpType.SUBSTITUTE,PlayerPosition.SUBSTITUTION,lineUp[58].filter{ it.isDigit()}.toInt()))
-
-        return  lineUpList.toList()
+        return playersLineUp
     }
 
+    private fun extractEvents(eventsHtml: String): Pair<List<EventDto>, List<EventDto>> {
+        val homeEvents = arrayListOf<EventDto>()
+        val awayEvents = arrayListOf<EventDto>()
+        val doc = Jsoup.parse(eventsHtml)
+        val matchEvents = doc.getElementsByClass("scrollable").first()!!
+            .getElementsByTag("ul").first()!!.children()
 
-    fun extractStats(siteScrap: SiteScrap): List<StatDto>{
-        val stats=siteScrap.stats.split("\n")
-        var statsList= arrayListOf<StatDto>()
+        matchEvents.forEach { matchEvent ->
+            val matchDetailsHome = matchEvent.childNode(0)
+            val matchDetailAway = matchEvent.childNode(2)
+            val eventMinuteHtml = matchEvent.childNode(1).outerHtml()
+            val minute = Jsoup.parse(eventMinuteHtml).text().extractNumbersToInt()
 
-        statsList.add(StatDto(stats[2].filter { it.isDigit() }.toInt(),stats[4].filter { it.isDigit() }.toInt(),StatType.SHOTS))
-        statsList.add(StatDto(stats[5].filter { it.isDigit() }.toInt(),stats[7].filter { it.isDigit() }.toInt(),StatType.SHOTS_ON_TARGET))
-        statsList.add(StatDto(stats[8].filter { it.isDigit() }.toInt(),stats[10].filter { it.isDigit() }.toInt(),StatType.CORNERS))
-        statsList.add(StatDto(stats[11].filter { it.isDigit() }.toInt(),stats[13].filter { it.isDigit() }.toInt(),StatType.OFFSIDES))
-        statsList.add(StatDto(stats[14].filter { it.isDigit() }.toInt(),stats[16].filter { it.isDigit() }.toInt(),StatType.FOULS))
-        statsList.add(StatDto(stats[17].filter { it.isDigit() }.toInt(),stats[19].filter { it.isDigit() }.toInt(),StatType.YELLOW_CARDS))
-        statsList.add(StatDto(stats[20].filter { it.isDigit() }.toInt(),stats[22].filter { it.isDigit() }.toInt(),StatType.RED_CARDS))
+            if (matchDetailsHome.childNodes().isEmpty().not()) {
+                homeEvents.addAll(cleanEvent(minute = minute, eventHolderHtml = matchDetailsHome.outerHtml()))
+            }
 
-        return statsList.toList()
+            if (matchDetailAway.childNodes().isEmpty().not()) {
+                awayEvents.addAll(cleanEvent(minute = minute, eventHolderHtml = matchDetailAway.outerHtml()))
+            }
+        }
+
+        return homeEvents to awayEvents
+    }
+
+    private fun cleanEvent(minute: Int, eventHolderHtml: String): List<EventDto> {
+        val events = arrayListOf<EventDto>()
+        val eventItems = Jsoup.parse(eventHolderHtml).getElementsByTag("li")
+
+        eventItems.forEach { eventItem ->
+            val itemHtml = eventItem.html()
+            val doc = Jsoup.parse(itemHtml)
+            val eventType = determineEventType(htmlContent = itemHtml)
+            val player = doc.text()
+
+            events.add(
+                EventDto(
+                    player = PlayerDto(name = player),
+                    minute = minute,
+                    type = eventType
+                )
+            )
+        }
+
+        return events
+    }
+
+    private fun determineEventType(htmlContent: String): EventType {
+        val content = htmlContent.lowercase()
+        if (content.contains("come_off")) {
+            return EventType.SUBSTITUTION_OUT
+        }
+        if (content.contains("come_on")) {
+            return EventType.SUBSTITUTION_IN
+        }
+        if (content.contains("booking")) {
+            return EventType.YELLOW_CARD
+        }
+        if (content.contains("dismissal")) {
+            return EventType.RED_CARD
+        }
+        if (content.contains("goal")) {
+            return EventType.GOAL
+        }
+        if (content.contains("own-goal")) {
+            return EventType.OWN_GOAL
+        }
+
+        throw Exception("UNKNOWN EVENT, here's the html $content")
+    }
+
+    private fun extractStats(matchStats: String): List<StatDto> {
+        val stats = matchStats.split("\n")
+
+        return listOf(
+            constructStat(stats = stats, homePos = 2, awayPos = 4, type = StatType.SHOTS),
+            constructStat(stats = stats, homePos = 5, awayPos = 7, type = StatType.SHOTS_ON_TARGET),
+            constructStat(stats = stats, homePos = 8, awayPos = 10, type = StatType.CORNERS),
+            constructStat(stats = stats, homePos = 11, awayPos = 13, type = StatType.OFFSIDES),
+            constructStat(stats = stats, homePos = 14, awayPos = 16, type = StatType.FOULS),
+            constructStat(stats = stats, homePos = 17, awayPos = 19, type = StatType.YELLOW_CARDS),
+            constructStat(stats = stats, homePos = 20, awayPos = 22, type = StatType.RED_CARDS)
+        )
+    }
+
+    private fun constructStat(stats: List<String>, homePos: Int, awayPos: Int, type: StatType): StatDto {
+        return StatDto(
+            home = stats[homePos].extractNumbersToInt(),
+            away = stats[awayPos].extractNumbersToInt(),
+            type = type
+        )
     }
 }
