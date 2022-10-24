@@ -19,7 +19,8 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":app"))
     implementation(project(":Persistence"))
-    
+    implementation("org.testng:testng:7.1.0")
+
     testImplementation(kotlin("test"))
 
     implementation("uy.kohesive.injekt:injekt-core:1.16.1")

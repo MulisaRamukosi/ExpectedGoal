@@ -55,6 +55,10 @@ class BrowserServiceImpl(private val browser: Browser) : BrowserService {
         driver.get(url)
     }
 
+    override suspend fun maximizeBrowser() {
+        driver.manage().window().maximize()
+    }
+
     override suspend fun closeBrowser() {
         driver.quit()
     }
@@ -89,9 +93,11 @@ class BrowserServiceImpl(private val browser: Browser) : BrowserService {
 
     override suspend fun clickElement(i: Int?) {
         i?.let {
+            wait().until(ExpectedConditions.elementToBeClickable(webElements!![it]))
             webElements!![it].click()
             return
         }
+        wait().until(ExpectedConditions.elementToBeClickable(webElement!!))
         webElement!!.click()
     }
 
@@ -105,6 +111,14 @@ class BrowserServiceImpl(private val browser: Browser) : BrowserService {
 
     override suspend fun getCurrentUrl(): String {
         return driver.currentUrl
+    }
+
+    override suspend fun navigateBack() {
+        driver.navigate().back()
+    }
+
+    override suspend fun copy(): BrowserService {
+        return BrowserServiceImpl(browser = browser)
     }
 
     private fun extractDataFromElement(attr: String, i: Int?) : String{
