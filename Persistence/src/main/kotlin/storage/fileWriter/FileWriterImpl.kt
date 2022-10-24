@@ -3,11 +3,11 @@ package storage.fileWriter
 import java.io.FileOutputStream
 import java.lang.Exception
 
-class BaseFileWriterImpl(override val fileName: String) : FileWriter {
+class FileWriterImpl(override val fileName: String) : FileWriter {
 
     override fun writeRow(value: String): Boolean {
         return try {
-            FileOutputStream(fileName).apply {
+            FileOutputStream(fileName, true).apply {
                 val writer = bufferedWriter()
                 writer.write(value)
                 writer.newLine()

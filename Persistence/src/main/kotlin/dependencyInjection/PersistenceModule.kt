@@ -2,18 +2,15 @@ package dependencyInjection
 
 import constants.CsvFileNames
 import dao.*
-import dao.implementation.CommentaryDaoImpl
 import dao.implementation.*
-import dao.implementation.EventDaoImpl
-import dao.implementation.LocationDaoImpl
-import dao.implementation.MatchDaoImpl
-import dao.implementation.PlayerDaoImpl
-import dao.implementation.TeamDaoImpl
+import mapper.CommentaryMapper
 import mapper.TeamMapper
+import repo.CommentaryRepoImpl
 import repo.TeamRepoImpl
+import repositories.CommentaryRepo
 import repositories.TeamRepo
 import storage.fileDefinition.FileDefinition
-import storage.fileWriter.TeamFileWriterImpl
+import storage.fileWriter.FileWriterImpl
 import uy.kohesive.injekt.api.InjektModule
 import uy.kohesive.injekt.api.InjektRegistrar
 import uy.kohesive.injekt.api.addSingletonFactory
@@ -26,8 +23,16 @@ object PersistenceModule : InjektModule {
         addSingletonFactory<TeamRepo> {
             TeamRepoImpl(
                 mapper = TeamMapper(),
-                fileWriter = TeamFileWriterImpl(fileName = CsvFileNames.TEAM)
+                fileWriter = FileWriterImpl(fileName = CsvFileNames.TEAM)
             )
         }
+
+        addSingletonFactory <CommentaryRepo> {
+            CommentaryRepoImpl(
+                mapper = CommentaryMapper(),
+                fileWriter = FileWriterImpl(fileName = CsvFileNames.COMMENTARY)
+            )
+        }
+
     }
 }

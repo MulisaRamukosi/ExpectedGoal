@@ -4,7 +4,7 @@ import dto.StatDto
 import entities.Stat
 import java.util.*
 
-internal class StatMapper : BaseMapper<CommentaryDto, Stat> {
+internal class StatMapper : BaseMapper<StatDto, Stat> {
     //"id,matchId,home,away,type
     override fun toDto(entity: Stat): StatDto {
         return StatDto(

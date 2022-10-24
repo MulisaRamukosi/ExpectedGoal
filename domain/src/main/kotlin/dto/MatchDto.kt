@@ -4,15 +4,15 @@ import java.util.Date
 
 data class MatchDto(
     val date: Date,
-    val location: LocationDto,
-    val homeTeam: TeamDto,
-    val awayTeam: TeamDto,
+    var location: LocationDto,
+    var homeTeam: TeamDto,
+    var awayTeam: TeamDto,
     val homeScore: Int,
     val awayScore: Int,
-    val stats: List<StatDto>,
-    val commentary: List<CommentaryDto>,
-    val homeLineUp: List<LineUpDto>,
-    val awayLineUp: List<LineUpDto>,
-    val homeEvents: List<EventDto>,
-    val awayEvents: List<EventDto>
+    var stats: List<StatDto>,
+    var commentary: List<CommentaryDto>,
+    var homeLineUp: List<LineUpDto>,
+    var awayLineUp: List<LineUpDto>,
+    var homeEvents: List<EventDto>,
+    var awayEvents: List<EventDto>
 )

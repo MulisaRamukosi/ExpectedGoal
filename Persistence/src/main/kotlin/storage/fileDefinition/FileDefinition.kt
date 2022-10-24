@@ -4,7 +4,7 @@ import constants.CsvFileNames
 import java.io.File
 
 class FileDefinition {
-    fun setupCsvFiles(){
+    fun setupCsvFiles() {
         setupTeamCsvFile()
         setupLocationCsvFile()
         setupCommentaryCsvFile()
@@ -14,6 +14,12 @@ class FileDefinition {
         setupStatCsvFile()
         setupPlayerCsvFile()
     }
+
+    fun deleteAllCsvFiles(){
+        File(CsvFileNames.TEAM).delete()
+        File(CsvFileNames.LOCATION).delete()
+    }
+
     private fun setupTeamCsvFile(){
         generateCsvFile(fileName = CsvFileNames.TEAM, columns = "id,name\n")
     }
@@ -46,10 +52,10 @@ class FileDefinition {
         generateCsvFile(fileName = CsvFileNames.PLAYER, columns = "id,name\n")
     }
 
-    private fun generateCsvFile(fileName: String, columns String){
-        val file = File(filename)
+    private fun generateCsvFile(fileName: String, columns: String){
+        val file = File(fileName)
         if (file.exists().not() && file.createNewFile()){
-            file.WriteText(text = columns)
+            file.writeText(text = columns)
         }
     }
 }
