@@ -5,25 +5,49 @@ import models.SiteScrap
 class ScrapperServiceImpl (private val browserService: BrowserService): ScrapperService {
 
     override suspend fun scrapPage(): SiteScrap {
-        val matdet = browserService.findElementByClass(className = "match-details-header").extractInnerText(i=0)
-        val events = browserService.findElementByClass(className = "events-container").extractInnerText(i=0)
+        val matchDetails = extractMatchDetails()
+
+        //click events
+        clickTab(8,"menu-item")
+        val events = extractEvents()
 
         //Click stats
+        clickTab(9,"menu-item")
+        val stats = extractStats()
 
-        val stats = browserService.findElementByClass(className = "component-wrapper").extractInnerText(i=0)
         // Click LineUp
+        clickTab(10,"menu-item")
+        val homelineup = extractHomeLineup()
+        val awaylineup = extractAwayLineup()
 
-        val homelineup = browserService.findElementByClass(className = "line-up").extractInnerText(i=0)//Have same name
-        val awaylineup = browserService.findElementByClass(className = "line-up").extractInnerText(i=0)//Have same name
 
         return SiteScrap(
-            matchDetails = matdet,
+            matchDetails = matchDetails,
             events = events,
             stats = stats,
             homeLineUp = homelineup,
             awayLineUp = awaylineup,
             commentary = ""
         )
+    }
+     suspend fun extractMatchDetails():String {
+        return browserService.findElementByClass(className = "match-details-header").extractInnerText(i=0)
+    }
+
+    suspend fun extractEvents():String{
+        return browserService.findElementByClass(className = "events-container").extractInnerText(i=0)
+    }
+
+    suspend fun extractStats():String{
+        return browserService.findElementByClass(className = "component-wrapper").extractInnerText(i=0)
+    }
+
+    suspend fun extractHomeLineup():String{
+        return browserService.findElementByClass(className = "line-up").extractInnerText(i=0)//Have same name
+    }
+
+    suspend fun extractAwayLineup():String{
+        return browserService.findElementByClass(className = "line-up").extractInnerText(i=2)//Have same name
     }
 
     private suspend fun clickTab(pos: Int, ClassName: String){
