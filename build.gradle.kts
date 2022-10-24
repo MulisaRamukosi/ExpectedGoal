@@ -25,6 +25,7 @@ dependencies {
 
     implementation("uy.kohesive.injekt:injekt-core:1.16.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 }
 
 tasks.test {
