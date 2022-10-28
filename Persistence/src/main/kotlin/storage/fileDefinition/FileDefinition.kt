@@ -18,6 +18,12 @@ class FileDefinition {
     fun deleteAllCsvFiles(){
         File(CsvFileNames.TEAM).delete()
         File(CsvFileNames.LOCATION).delete()
+        File(CsvFileNames.COMMENTARY).delete()
+        File(CsvFileNames.EVENT).delete()
+        File(CsvFileNames.LINEUP).delete()
+        File(CsvFileNames.MATCH).delete()
+        File(CsvFileNames.PLAYER).delete()
+        File(CsvFileNames.STAT).delete()
     }
 
     private fun setupTeamCsvFile(){
