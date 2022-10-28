@@ -13,9 +13,9 @@ import java.io.FileReader
 
 class TestTeamRepo {
 
-    private val teamRepo: TeamRepoImpl = TeamRepoImpl(
+    private val locationRepo: TeamRepoImpl = TeamRepoImpl(
         mapper = TeamMapper(),
-        fileWriter = FileWriterImpl(fileName = CsvFileNames.TEAM)
+        fileWriter = FileWriterImpl(fileName = CsvFileNames.LOCATION)
     )
 
     @BeforeEach
@@ -30,9 +30,9 @@ class TestTeamRepo {
 
     @Test
     fun testWriteSingleLine(){
-        teamRepo.save(dto = TeamDto("test"))
+        locationRepo.save(dto = TeamDto("test"))
 
-        val fileTeamCsv = FileReader(CsvFileNames.TEAM).readLines()
+        val fileTeamCsv = FileReader(CsvFileNames.LOCATION).readLines()
 
         assertTrue(fileTeamCsv.size == 1)
     }
@@ -40,9 +40,9 @@ class TestTeamRepo {
     @Test
     fun testWriteMultipleLines(){
         repeat(3){
-            teamRepo.save(dto = TeamDto("test$it"))
+            locationRepo.save(dto = TeamDto("test$it"))
         }
-        val fileTeamCsv = FileReader(CsvFileNames.TEAM).readLines()
+        val fileTeamCsv = FileReader(CsvFileNames.LOCATION).readLines()
 
         assertTrue(fileTeamCsv.size == 3)
     }
