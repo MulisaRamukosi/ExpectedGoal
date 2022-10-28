@@ -28,7 +28,7 @@ class TestStatRepo {
     fun deleteStatCsvFile(){
         File(CsvFileNames.TEAM).delete()
     }
-
+    
     @Test
     fun testWriteSingleLine(){
         statRepo.save(dto = StatDto(home = 1,away = 2, type = StatType.SHOTS))
